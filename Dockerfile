@@ -13,29 +13,21 @@ ENV LTTNG_UST_REGISTER_TIMEOUT 0
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         libc6 \
-        libcurl3 \
+        libcurl \
         libgcc1 \
         libgssapi-krb5-2 \
         libicu57 \
-        liblttng-ust0 \
+        lttng-ust \
         libssl1.0.2 \
         libstdc++6 \
-        libunwind8 \
-        libuuid1 \
-        python3 \
+        libunwind \
+        libuuid \
         zlib1g \
-        nuget \
-        g++ \
-        m4 \
-        make \
-        cmake \
-        automake \
+        openssl-libs \
+        krb5-libs \
+        libicu \
         libtool \
-        zlib1g-dev \
-        libssl-dev \
-        libapr1-dev \
-        libboost-system-dev \
-        build-essential \
+        zlib \
     && rm -rf /var/lib/apt/lists/* \
     && git config --global credential.helper store
 
