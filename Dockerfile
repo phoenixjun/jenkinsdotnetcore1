@@ -9,6 +9,8 @@ RUN apt-get update \
         
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
+        libundwind \
+        icu \
         libc6 \
         libcurl3 \
         libgcc1 \
