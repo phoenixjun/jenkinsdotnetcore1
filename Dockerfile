@@ -12,20 +12,30 @@ ENV LTTNG_UST_REGISTER_TIMEOUT 0
 # Install .NET CLI dependencies
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        clang-3.5 \
         libc6 \
         libcurl3 \
         libgcc1 \
-        libicu52 \
-        liblldb-3.6 \
+        libgssapi-krb5-2 \
+        libicu57 \
         liblttng-ust0 \
-        libssl1.0.0 \
+        libssl1.0.2 \
         libstdc++6 \
-        libtinfo5 \
         libunwind8 \
         libuuid1 \
+        python3 \
         zlib1g \
-        gettext \
+        nuget \
+        g++ \
+        m4 \
+        make \
+        cmake \
+        automake \
+        libtool \
+        zlib1g-dev \
+        libssl-dev \
+        libapr1-dev \
+        libboost-system-dev \
+        build-essential \
     && rm -rf /var/lib/apt/lists/* \
     && git config --global credential.helper store
 
