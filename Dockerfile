@@ -19,9 +19,25 @@ RUN apt-get update \
         libstdc++6 \
         libunwind8 \
         libuuid1 \
+        python3 \
         zlib1g \
+        nuget \
+        g++ \
+        m4 \
+        make \
+        cmake \
+        automake \
+        libtool \
+        zlib1g-dev \
+        libssl-dev \
+        libapr1-dev \
+        libboost-system-dev \
+        python3-dev \
+        python3-pip \
+        build-essential \
     && rm -rf /var/lib/apt/lists/*
-
+    && git config --global credential.helper store
+    
 # Install .NET Core SDK
 ENV DOTNET_SDK_VERSION 1.1.6
 ENV DOTNET_SDK_DOWNLOAD_URL https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VERSION/dotnet-dev-debian-x64.$DOTNET_SDK_VERSION.tar.gz
