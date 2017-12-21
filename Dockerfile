@@ -4,7 +4,8 @@ MAINTAINER Jun Chen<jchen@nlis.com.au>
 USER root
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends apt-utils
+    && apt-get install -y --no-install-recommends apt-utils \
+    dialog
         
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
