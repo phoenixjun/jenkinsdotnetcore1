@@ -1,7 +1,6 @@
 FROM jenkins/jenkins:2.60.3
 MAINTAINER Jun Chen<jchen@nlis.com.au>
 
-#----Install .Net Core SDK & Nuget & Python3----#
 USER root
 
 # Work around https://github.com/dotnet/cli/issues/1582 until Docker releases a
@@ -11,9 +10,7 @@ USER root
 ENV LTTNG_UST_REGISTER_TIMEOUT 0
 
 # Install .NET CLI dependencies
-RUN echo "deb [arch=amd64] http://llvm.org/apt/jessie/ llvm-toolchain-jessie-3.6 main" > /etc/apt/sources.list.d/llvm.list \
-    && wget -q -O - http://llvm.org/apt/llvm-snapshot.gpg.key|apt-key add - \
-    && apt-get update \
+RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         clang-3.5 \
         libc6 \
@@ -29,7 +26,8 @@ RUN echo "deb [arch=amd64] http://llvm.org/apt/jessie/ llvm-toolchain-jessie-3.6
         libuuid1 \
         zlib1g \
         gettext \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && git config --global credential.helper store
 
 # Install .NET Core
 ENV DOTNET_VERSION 1.1.0
@@ -40,14 +38,6 @@ RUN curl -SL $DOTNET_DOWNLOAD_URL --output dotnet.tar.gz \
     && tar -zxf dotnet.tar.gz -C /usr/share/dotnet \
     && rm dotnet.tar.gz \
     && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
-
-# Install .NET Core SDK
-ENV DOTNET_SDK_VERSION 1.0.0-preview3-004056
-ENV DOTNET_SDK_DOWNLOAD_URL https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VERSION/dotnet-dev-debian-x64.$DOTNET_SDK_VERSION.tar.gz
-
-RUN curl -SL $DOTNET_SDK_DOWNLOAD_URL --output dotnet.tar.gz \
-    && tar -zxf dotnet.tar.gz -C /usr/share/dotnet \
-    && rm dotnet.tar.gz
 
 # Trigger the population of the local package cache
 ENV NUGET_XMLDOC_MODE skip
