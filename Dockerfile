@@ -19,6 +19,7 @@ RUN apt-get update \
         libstdc++6 \
         libunwind8 \
         libuuid1 \
+        libkrb5 \
         python3 \
         zlib1g \
         nuget \
