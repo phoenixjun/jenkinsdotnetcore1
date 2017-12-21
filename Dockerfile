@@ -4,70 +4,50 @@ MAINTAINER Jun Chen<jchen@nlis.com.au>
 #----Install .Net Core SDK & Nuget & Python3----#
 USER root
 
-RUN apt-get update \
+# Work around https://github.com/dotnet/cli/issues/1582 until Docker releases a
+# fix (https://github.com/docker/docker/issues/20818). This workaround allows
+# the container to be run with the default seccomp Docker settings by avoiding
+# the restart_syscall made by LTTng which causes a failed assertion.
+ENV LTTNG_UST_REGISTER_TIMEOUT 0
+
+# Install .NET CLI dependencies
+RUN echo "deb [arch=amd64] http://llvm.org/apt/jessie/ llvm-toolchain-jessie-3.6 main" > /etc/apt/sources.list.d/llvm.list \
+    && wget -q -O - http://llvm.org/apt/llvm-snapshot.gpg.key|apt-key add - \
+    && apt-get update \
     && apt-get install -y --no-install-recommends \
+        clang-3.5 \
         libc6 \
         libcurl3 \
         libgcc1 \
-        libgssapi-krb5-2 \
-        libicu57 \
+        libicu52 \
+        liblldb-3.6 \
         liblttng-ust0 \
-        libssl1.0.2 \
+        libssl1.0.0 \
         libstdc++6 \
+        libtinfo5 \
         libunwind8 \
         libuuid1 \
-        python3 \
         zlib1g \
-        nuget \
-        g++ \
-        m4 \
-        make \
-        cmake \
-        automake \
-        libtool \
-        zlib1g-dev \
-        libssl-dev \
-        libapr1-dev \
-        libboost-system-dev \
-        python3-dev \
-        python3-pip \
-        build-essential \
-    && rm -rf /var/lib/apt/lists/* \
-    && git config --global credential.helper store
+        gettext \
+    && rm -rf /var/lib/apt/lists/*
 
-# Set Default symbolic python ==> python3,pip ==> pip3,and some modules
-RUN rm /usr/bin/python && ln -s /usr/bin/python3.5 /usr/bin/python \
-    && ln -s /usr/bin/pip3 /usr/bin/pip \
-    && pip install setuptools \
-    && pip install six asn1crypto bcrypt chardet nose mock pbr pyasn1 requests \
-    && pip install cffi multi_key_dict cryptography idna paramiko pyapi-gitlab \
-    && pip install pyasn1 pycparser PyNaCl python-jenkins selenium
+# Install .NET Core
+ENV DOTNET_VERSION 1.1.0
+ENV DOTNET_DOWNLOAD_URL https://dotnetcli.blob.core.windows.net/dotnet/release/1.1.0/Binaries/$DOTNET_VERSION/dotnet-debian-x64.$DOTNET_VERSION.tar.gz
 
-# Install libuv
-ENV LIBUV_VERSION 1.16.0
-RUN curl -SL https://github.com/libuv/libuv/archive/v${LIBUV_VERSION}.tar.gz --output v${LIBUV_VERSION}.tar.gz \
-    && tar -zxf v${LIBUV_VERSION}.tar.gz \
-    && rm -rf v${LIBUV_VERSION}.tar.gz \
-    && cd libuv-${LIBUV_VERSION} \
-    && sh autogen.sh \
-    && ./configure \
-    && make \
-    && make check \
-    && make install \
-    && cd ../ \
-    && rm -rf libuv-${LIBUV_VERSION}
-
-# Install .NET Core SDK
-ENV DOTNET_SDK_VERSION 2.0.0
-ENV DOTNET_SDK_DOWNLOAD_URL https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VERSION/dotnet-sdk-$DOTNET_SDK_VERSION-linux-x64.tar.gz
-ENV DOTNET_SDK_DOWNLOAD_SHA E457F3A5685382F7F24851A2E76EDBE75B575948C8A7F43220F159BA29C329A5008BBE7220C18DFB31EAF0398FC72177B1948B65E19B34ED0D907EFB459CF4B0
-
-RUN curl -SL $DOTNET_SDK_DOWNLOAD_URL --output dotnet.tar.gz \
-    && echo "$DOTNET_SDK_DOWNLOAD_SHA dotnet.tar.gz" | sha512sum -c - \
+RUN curl -SL $DOTNET_DOWNLOAD_URL --output dotnet.tar.gz \
     && mkdir -p /usr/share/dotnet \
     && tar -zxf dotnet.tar.gz -C /usr/share/dotnet \
     && rm dotnet.tar.gz \
     && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
+
+# Install .NET Core SDK
+ENV DOTNET_SDK_VERSION 1.0.0-preview3-004056
+ENV DOTNET_SDK_DOWNLOAD_URL https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$DOTNET_SDK_VERSION/dotnet-dev-debian-x64.$DOTNET_SDK_VERSION.tar.gz
+
+RUN curl -SL $DOTNET_SDK_DOWNLOAD_URL --output dotnet.tar.gz \
+    && tar -zxf dotnet.tar.gz -C /usr/share/dotnet \
+    && rm dotnet.tar.gz
 
 # Trigger the population of the local package cache
 ENV NUGET_XMLDOC_MODE skip
