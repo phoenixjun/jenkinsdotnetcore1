@@ -35,7 +35,7 @@ RUN apt-get update \
         python3-dev \
         python3-pip \
         build-essential \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
     && git config --global credential.helper store
     
 # Install .NET Core SDK
