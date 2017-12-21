@@ -5,6 +5,7 @@ USER root
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
+        apt-utils \
         libc6 \
         libcurl3 \
         libgcc1 \
